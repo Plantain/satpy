@@ -143,7 +143,8 @@ class ZarrCacheHelper:
         should_cache, cache_dir = self._get_should_cache_and_cache_dir(new_args, cache_dir)
         zarr_fn = self._zarr_pattern(arg_hash)
         zarr_format = os.path.join(cache_dir, zarr_fn)
-        zarr_paths = glob(zarr_format.format("*"))
+        zarr_paths = [path for path in glob(zarr_format.format("*")) if not os.path.exists(path)
+                      or len(os.listdir(path)) > 0]
         if not should_cache or not zarr_paths:
             # use sanitized arguments if we are caching, otherwise use original arguments
             args_to_use = new_args if should_cache else args
