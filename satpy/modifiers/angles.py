@@ -152,7 +152,8 @@ class ZarrCacheHelper:
         sanitized_args = self._sanitize_args_func(*args) if self._sanitize_args_func is not None else args
 
         zarr_file_pattern = self._get_zarr_file_pattern(sanitized_args, cache_dir)
-        zarr_paths = glob(zarr_file_pattern.format("*"))
+        zarr_paths = [path for path in glob(zarr_file_pattern.format("*")) if not os.path.exists(path)
+                      or len(os.listdir(path)) > 0]
 
         if not zarr_paths:
             # use sanitized arguments
